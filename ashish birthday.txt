@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, Ashish! 🎂</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght=700&family=Plus+Jakarta+Sans:wght=300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #050816;
+            --secondary-color: #0F172A;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --gold: #FFD166;
+            --blue-glow: #38BDF8;
+            --purple: #8B5CF6;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: #ffffff;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .handwritten {
+            font-family: 'Caveat', cursive;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+        }
+
+        .aurora-glow {
+            position: absolute;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(56, 189, 248, 0.05) 50%, transparent 100%);
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Anime Scene Containers */
+        .anime-window {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            background: linear-gradient(180deg, #0f1123 0%, #1a1c3d 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 40px rgba(139, 92, 246, 0.15);
+        }
+
+        /* Custom Pure CSS Anime Silhouette & Toasting Animation Rules */
+        .silhouette-left, .silhouette-right {
+            position: absolute;
+            bottom: 0;
+            width: 120px;
+            height: 200px;
+            background: #080914;
+            clip-path: polygon(30% 20%, 45% 0%, 60% 15%, 65% 10%, 70% 25%, 85% 30%, 75% 55%, 90% 100%, 10% 100%);
+        }
+        .silhouette-left { left: 15%; transform: scaleX(-1); }
+        .silhouette-right { right: 15%; }
+
+        .arm-left, .arm-right {
+            position: absolute;
+            bottom: 60px;
+            width: 70px;
+            height: 15px;
+            background: #080914;
+            transform-origin: 0% 50%;
+        }
+        .arm-left {
+            left: 38%;
+            transform: rotate(-25deg);
+            animation: toastLeft 4s ease-in-out infinite alternate;
+        }
+        .arm-right {
+            right: 38%;
+            transform-origin: 100% 50%;
+            transform: rotate(25deg);
+            animation: toastRight 4s ease-in-out infinite alternate;
+        }
+
+        .glass-glow {
+            position: absolute;
+            width: 12px;
+            height: 18px;
+            background: rgba(239, 68, 68, 0.7);
+            box-shadow: 0 0 15px #ef4444, 0 0 30px #ef4444;
+            clip-path: polygon(0% 0%, 100% 0%, 80% 70%, 50% 70%, 50% 100%, 80% 100%, 20% 100%, 50% 100%, 50% 70%, 20% 70%);
+        }
+        .arm-left .glass-glow { right: -5px; top: -10px; transform: rotate(25deg); }
+        .arm-right .glass-glow { left: -5px; top: -10px; transform: rotate(-25deg); }
+
+        @keyframes toastLeft {
+            0% { transform: rotate(-20deg); }
+            100% { transform: rotate(-42deg) translateX(12px); }
+        }
+        @keyframes toastRight {
+            0% { transform: rotate(20deg); }
+            100% { transform: rotate(42deg) translateX(-12px); }
+        }
+
+        .wine-drop {
+            position: absolute;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: floatUp 3s infinite linear;
+            opacity: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(180px) scale(0); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(90px) scale(1.3); opacity: 0; }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+        #music-control { position: fixed; top: 20px; right: 20px; z-index: 999; }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop src="https://pub-22123c5000574f889efcfcb40003cb06.r2.dev/Jai%20Veeru%20-%20Khasa%20Aala%20Chahar.mp3"></audio>
+
+    <button id="music-control" class="glass-card px-4 py-3 flex items-center gap-2 text-sm text-white/80 hover:text-white transition-all cursor-pointer shadow-lg shadow-black/40">
+        <i id="music-icon" class="fas fa-music animate-pulse text-[#38BDF8]"></i>
+        <span id="music-text">Play Jai Veeru 🎵</span>
+    </button>
+
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none"></canvas>
+    <canvas id="cursor-canvas" class="fixed top-0 left-0 w-full h-full -z-5 pointer-events-none"></canvas>
+
+    <main class="relative z-10">
+
+        <section id="slide-1" class="min-h-screen flex flex-col justify-center items-center px-6 relative overflow-hidden text-center">
+            <div class="aurora-glow top-[-10%] left-[-10%]"></div>
+            <div class="glass-card max-w-3xl p-8 md:p-12 space-y-6 relative z-10 shadow-2xl shadow-purple-500/5">
+                <h1 id="hero-title" class="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-[#FFD166] to-[#38BDF8] tracking-tight py-2">
+                    Happy Birthday, Ashish. 🎂
+                </h1>
+                <p id="hero-desc" class="text-lg md:text-xl text-gray-300 leading-relaxed font-light max-w-2xl mx-auto opacity-0">
+                    Some people simply become a part of our best memories without even trying. Today isn't just another date on the calendar—it's the celebration of someone whose presence makes every laugh louder, every adventure better, and every moment unforgettable. Welcome to a small surprise made just for you.
+                </p>
+                <div class="pt-6 animate-bounce">
+                    <a href="#slide-2" class="text-xs tracking-widest text-[#38BDF8] uppercase font-semibold hover:opacity-80 transition-all">
+                        Scroll to begin the journey <br> <i class="fas fa-chevron-down mt-2 text-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="slide-2" class="min-h-screen flex flex-col justify-center items-center px-6 relative py-20">
+            <div class="aurora-glow bottom-[-10%] right-[-10%]"></div>
+            <div class="max-w-5xl w-full grid md:grid-cols-2 gap-12 items-center">
+                
+                <div class="glass-card p-8 md:p-12 space-y-6 slide-in-left">
+                    <span class="text-xs font-bold uppercase tracking-widest text-[#38BDF8]"><i class="fas fa-user-friends mr-2"></i> Brotherhood</span>
+                    <h2 class="text-3xl md:text-5xl font-extrabold text-white">More Than Friends. <span class="text-[#38BDF8]">Brothers.</span></h2>
+                    <p class="text-gray-300 leading-relaxed font-light">
+                        Every late-night conversation, every stupid joke, every impossible plan, and every unforgettable memory has become another chapter in our story. Life keeps changing, but true friendship never fades. Thank you for always being the person everyone can count on.
+                    </p>
+                </div>
+
+                <div class="space-y-6 slide-in-right">
+                    <div class="anime-window">
+                        <div class="absolute top-12 left-1/4 w-1 h-1 bg-white rounded-full opacity-40"></div>
+                        <div class="absolute top-8 right-1/3 w-1.5 h-1.5 bg-purple-400 rounded-full opacity-60 animate-ping"></div>
+                        <div class="absolute top-24 right-1/4 w-1 h-1 bg-white rounded-full opacity-30"></div>
+                        
+                        <div class="wine-drop" style="left: 48%; animation-delay: 0s; width: 4px; height: 4px;"></div>
+                        <div class="wine-drop" style="left: 51%; animation-delay: 0.8s; width: 6px; height: 6px;"></div>
+                        <div class="wine-drop" style="left: 49%; animation-delay: 1.8s; width: 3px; height: 3px;"></div>
+
+                        <div class="silhouette-left"></div>
+                        <div class="silhouette-right"></div>
+
+                        <div class="arm-left"><div class="glass-glow"></div></div>
+                        <div class="arm-right"><div class="glass-glow"></div></div>
+                        
+                        <div class="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-[#8B5CF6]/10 to-transparent pointer-events-none"></div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center px-4">
+                        <div class="text-left">
+                            <p class="text-sm font-semibold text-[#38BDF8]">Vikash</p>
+                            <p class="text-[10px] uppercase text-gray-500 tracking-wider">The Day One</p>
+                        </div>
+                        <div class="text-center text-xl text-[#FFD166] animate-pulse mx-2">
+                            <i class="fas fa-glass-cheers"></i>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-semibold text-[#FFD166]">Ashish Meena</p>
+                            <p class="text-[10px] uppercase text-gray-500 tracking-wider">The Birthday King</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="slide-3" class="min-h-screen flex flex-col justify-center items-center px-6 relative py-20 bg-gradient-to-b from-transparent via-[#0F172A]/40 to-transparent">
+            <div class="max-w-4xl w-full text-center space-y-8 relative z-10">
+                
+                <div class="w-32 h-32 mx-auto relative group flex items-center justify-center">
+                    <div class="absolute inset-0 bg-gradient-to-r from-[#FFD166] to-[#8B5CF6] rounded-full blur-xl opacity-40 group-hover:opacity-80 transition-opacity duration-700 animate-pulse"></div>
+                    <div class="w-24 h-24 rounded-full border border-[#FFD166]/30 flex items-center justify-center bg-slate-900/80 text-4xl text-[#FFD166] shadow-2xl relative z-10">
+                        <i class="fas fa-wine-glass-alt animate-bounce"></i>
+                    </div>
+                </div>
+
+                <div class="glass-card max-w-2xl mx-auto p-8 md:p-12 space-y-6 relative border-[#FFD166]/20 shadow-xl shadow-amber-500/5">
+                    <span class="text-xs font-bold uppercase tracking-widest text-[#FFD166]"><i class="fas fa-crown mr-2"></i> The Legend</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-[#FFD166]">The Main Character.</h2>
+                    <p class="text-gray-300 leading-relaxed font-light">
+                        Your confidence inspires people. Your kindness earns respect. Your smile spreads positivity, and your determination reminds everyone that dreams are meant to be chased. You don't just grow older—you grow stronger, wiser, and even more unforgettable every single year.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="slide-4" class="min-h-screen flex flex-col justify-center items-center px-6 relative py-20">
+            <div class="aurora-glow top-[20%] right-[10%]" style="background: radial-gradient(circle, rgba(56,189,248,0.2) 0%, transparent 70%);"></div>
+            
+            <div class="glass-card max-w-3xl p-8 md:p-12 text-center space-y-8 trigger-fireworks border-sky-500/20 shadow-2xl shadow-sky-500/5">
+                <span class="text-xs font-bold uppercase tracking-widest text-[#38BDF8]"><i class="fas fa-star mr-2"></i> Manifesting Greatness</span>
+                <h2 class="text-3xl md:text-5xl font-extrabold text-white">A New Chapter Begins</h2>
+                <p class="text-lg text-gray-300 font-light leading-relaxed">
+                    May this year bring opportunities you've always dreamed about, happiness that never fades, success beyond imagination, and countless memories worth celebrating. May every sunrise become a fresh beginning and every sunset remind you how far you've come.
+                </p>
+                <div class="flex justify-center gap-4 text-3xl text-[#FFD166]">
+                    <i class="fas fa-gavel animate-bounce"></i>
+                    <i class="fas fa-rocket animate-bounce" style="animation-delay: 0.2s"></i>
+                    <i class="fas fa-heart animate-bounce" style="animation-delay: 0.4s"></i>
+                </div>
+            </div>
+        </section>
+
+        <section id="slide-5" class="min-h-screen flex flex-col justify-center items-center px-6 relative py-20">
+            <div class="max-w-2xl w-full relative">
+                
+                <div id="letter-card" class="glass-card p-8 md:p-12 space-y-6 relative overflow-hidden transition-all duration-700 opacity-0 transform translate-y-12 border-purple-500/20 shadow-2xl shadow-purple-500/10">
+                    <div class="absolute top-4 right-6 text-purple-400 text-4xl opacity-20"><i class="fas fa-envelope-open-text"></i></div>
+                    
+                    <span class="text-xs font-bold uppercase tracking-widest text-[#8B5CF6]"><i class="fas fa-heart mr-2"></i> Personal Note</span>
+                    <h2 class="text-3xl font-extrabold text-white">A Letter From My Heart</h2>
+                    
+                    <div class="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent my-4"></div>
+                    
+                    <p class="handwritten text-2xl md:text-3xl text-purple-200/90 leading-relaxed tracking-wide">
+                        "Ashish, thank you for being the kind of friend people only hope to find once in a lifetime. No matter where life takes us, our friendship will always remain one of the greatest blessings I'll ever have. Keep smiling, keep dreaming, and never stop being the amazing person you already are. Happy Birthday, Brother. ❤️"
+                    </p>
+                    
+                    <div class="text-right pt-4">
+                        <p class="text-xs uppercase tracking-wider text-gray-400">With admiration,</p>
+                        <p class="handwritten text-3xl text-[#FFD166] mt-1">Vikash</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="slide-6" class="min-h-screen flex flex-col justify-center items-center px-6 relative py-20 text-center">
+            <div class="aurora-glow bottom-[10%] left-[20%]"></div>
+            
+            <div class="max-w-3xl space-y-8 z-10 trigger-confetti">
+                <div class="glass-card p-8 md:p-12 space-y-6 backdrop-blur-2xl">
+                    <h2 class="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#FFD166] via-white to-[#38BDF8]">
+                        Happy Birthday, <br class="md:hidden">Ashish Meena
+                    </h2>
+                    <p class="text-gray-300 text-lg font-light leading-relaxed max-w-2xl mx-auto">
+                        This isn't just the end of a website—it's a reminder that friendships like ours deserve to be celebrated every single day. Here's to another year of laughter, adventures, success, and unforgettable memories. May life always keep you smiling. Enjoy your special day—you truly deserve the very best.
+                    </p>
+                </div>
+
+                <div class="py-6 opacity-0 transform scale-95 transition-all duration-1000" id="final-quote">
+                    <p class="handwritten text-3xl md:text-4xl text-[#FFD166] max-w-xl mx-auto italic">
+                        "Some friendships aren't measured by time, but by the memories that last forever."
+                    </p>
+                    <div class="w-16 h-0.5 bg-[#38BDF8]/40 mx-auto mt-6"></div>
+                    <p class="text-[10px] tracking-widest text-gray-500 uppercase mt-4">Made with ❤️ by Vikash &bull; 2026</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const desc = document.getElementById('hero-desc');
+            setTimeout(() => {
+                desc.style.opacity = '1';
+                desc.style.transition = 'opacity 2.5s ease';
+            }, 800);
+        });
+
+        const musicBtn = document.getElementById('music-control');
+        const audio = document.getElementById('bg-music');
+        const musicIcon = document.getElementById('music-icon');
+        const musicText = document.getElementById('music-text');
+
+        musicBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play().catch(e => console.log("Audio play blocked."));
+                musicIcon.className = "fas fa-compact-disc animate-spin text-[#38BDF8]";
+                musicText.innerText = "Playing";
+            } else {
+                audio.pause();
+                musicIcon.className = "fas fa-music text-white/50";
+                musicText.innerText = "Play Jai Veeru 🎵";
+            }
+        });
+
+        const canvas = document.getElementById('bg-canvas');
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.z = 30;
+
+        const count = 1200;
+        const positions = new Float32Array(count * 3);
+
+        for(let i = 0; i < count * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 60;
+            positions[i+1] = (Math.random() - 0.5) * 60;
+            positions[i+2] = (Math.random() - 0.5) * 50;
+        }
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const pCanvas = document.createElement('canvas');
+        pCanvas.width = 16; pCanvas.height = 16;
+        const ctx = pCanvas.getContext('2d');
+        const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
+        grad.addColorStop(0, 'rgba(255,255,255,1)');
+        grad.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, 16, 16);
+        const pTexture = new THREE.CanvasTexture(pCanvas);
+
+        const material = new THREE.PointsMaterial({
+            size: 0.22, map: pTexture, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+        });
+
+        const starPoints = new THREE.Points(geometry, material);
+        scene.add(starPoints);
+
+        let clock = new THREE.Clock();
+        function animate() {
+            const elapsedTime = clock.getElapsedTime();
+            camera.position.z = 30 - (Math.sin(elapsedTime * 0.1) * 3);
+            starPoints.rotation.y = elapsedTime * 0.015;
+            starPoints.rotation.x = elapsedTime * 0.008;
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        const cursorCanvas = document.getElementById('cursor-canvas');
+        const cCtx = cursorCanvas.getContext('2d');
+        let particlesArray = [];
+        cursorCanvas.width = window.innerWidth;
+        cursorCanvas.height = window.innerHeight;
+
+        class FloatingFirefly {
+            constructor(x, y) {
+                this.x = x; this.y = y;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 1.5;
+                this.speedY = (Math.random() - 0.5) * 1.5;
+                this.color = Math.random() > 0.5 ? '#38BDF8' : '#FFD166';
+                this.alpha = 1;
+            }
+            update() { this.x += this.speedX; this.y += this.speedY; this.alpha -= 0.015; }
+            draw() {
+                cCtx.save(); cCtx.globalAlpha = this.alpha; cCtx.beginPath();
+                cCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2); cCtx.fillStyle = this.color;
+                cCtx.shadowBlur = 10; cCtx.shadowColor = this.color; cCtx.fill(); cCtx.restore();
+            }
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            if(particlesArray.length < 80) particlesArray.push(new FloatingFirefly(e.clientX, e.clientY));
+        });
+
+        function handleParticles() {
+            cCtx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update(); particlesArray[i].draw();
+                if (particlesArray[i].alpha <= 0) { particlesArray.splice(i, 1); i--; }
+            }
+            requestAnimationFrame(handleParticles);
+        }
+        handleParticles();
+
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.from("#slide-2 .slide-in-left", { scrollTrigger: { trigger: "#slide-2", start: "top 70%" }, opacity: 0, x: -60, duration: 1.2, ease: "power3.out" });
+        gsap.from("#slide-2 .slide-in-right", { scrollTrigger: { trigger: "#slide-2", start: "top 70%" }, opacity: 0, x: 60, duration: 1.2, ease: "power3.out" });
+        gsap.from("#slide-3 .glass-card", { scrollTrigger: { trigger: "#slide-3", start: "top 65%" }, opacity: 0, scale: 0.9, y: 30, duration: 1.4, ease: "elastic.out(1, 0.75)" });
+        gsap.to("#letter-card", { scrollTrigger: { trigger: "#slide-5", start: "top 60%" }, opacity: 1, y: 0, scale: 1, duration: 1.5, ease: "power4.out" });
+        gsap.to("#final-quote", { scrollTrigger: { trigger: "#slide-6", start: "top 65%" }, opacity: 1, scale: 1, duration: 1.5, ease: "power2.out" });
+
+        ScrollTrigger.create({
+            trigger: "#slide-4 .trigger-fireworks", start: "top 60%",
+            onEnter: () => {
+                let end = Date.now() + (3 * 1000);
+                (function frame() {
+                    confetti({ particleCount: 4, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#38BDF8', '#FFD166', '#8B5CF6'] });
+                    confetti({ particleCount: 4, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#38BDF8', '#FFD166', '#8B5CF6'] });
+                    if (Date.now() < end) requestAnimationFrame(frame);
+                }());
+            }
+        });
+
+        ScrollTrigger.create({
+            trigger: "#slide-6 .trigger-confetti", start: "top 50%",
+            onEnter: () => {
+                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#FFD166', '#38BDF8', '#8B5CF6', '#ffffff'] });
+            }
+        });
+    </script>
+</body>
+</html>
